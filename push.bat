@@ -23,4 +23,4 @@ echo Code successfully pushed to GitHub!
 echo Commit message: %commit_msg%
 echo ========================================
 
-pause  
+pause 
