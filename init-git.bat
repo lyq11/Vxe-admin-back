@@ -48,18 +48,21 @@ goto skip_remote
 
 :use_https
 set /p repo_name=Please enter GitHub repository name (e.g., username/repo-name): 
+call :check_and_remove_origin
 git remote add origin https://github.com/%repo_name%.git
 echo HTTPS remote repository configuration completed!
 goto continue
 
 :use_ssh
 set /p repo_name=Please enter GitHub repository name (e.g., username/repo-name): 
+call :check_and_remove_origin
 git remote add origin git@github.com:%repo_name%.git
 echo SSH remote repository configuration completed!
 goto continue
 
 :use_custom
 set /p repo_url=Please enter the full repository URL: 
+call :check_and_remove_origin
 git remote add origin %repo_url%
 echo Custom remote repository configuration completed!
 goto continue
@@ -69,7 +72,7 @@ echo Invalid choice, skipping remote repository configuration...
 
 :continue
 
-:: Check remote configuration
+:: Show remote info
 echo.
 echo Checking remote repository configuration...
 git remote -v
@@ -119,3 +122,13 @@ echo 2. Or manually execute: git push -u origin main
 echo.
 
 pause
+exit /b
+
+:check_and_remove_origin
+:: Check if remote 'origin' exists and remove if needed
+git remote get-url origin >nul 2>&1
+if not errorlevel 1 (
+    echo Remote 'origin' already exists. Replacing it...
+    git remote remove origin
+)
+exit /b
