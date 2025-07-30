@@ -21,14 +21,15 @@ interface CustomAxiosInstance extends Axios {
 
 export function createHttp (baseUrl?: string): CustomAxiosInstance {
   const request = axios.create({
-    baseURL: baseUrl || import.meta.env.VITE_APP_BASE_API,
+    baseURL: baseUrl || '/api',
     timeout: 20000 // 请求超时时间
   })
 
   request.interceptors.request.use(config => {
+    console.log('发送请求:', config.method?.toUpperCase(), config.url, 'baseURL:', config.baseURL)
     const userStore = useUserStore()
     const defHeaders = {
-      token: userStore.token
+      Authorization: userStore.token ? `Bearer ${userStore.token}` : ''
     }
     config.headers = Object.assign({}, defHeaders, config.headers)
     return config
@@ -43,12 +44,12 @@ export function createHttp (baseUrl?: string): CustomAxiosInstance {
         return Promise.reject(data)
     }
     if (data) {
-      if (data.code === 200) {
+      if (data.code === 200 || data.code === 0) {
         return data
       } else {
         VxeUI.modal.message({
           id: 'httpErr',
-          content: data.msg || '操作失败',
+          content: data.msg || data.message || '操作失败',
           status: 'error'
         })
       }
@@ -70,4 +71,4 @@ export function createHttp (baseUrl?: string): CustomAxiosInstance {
   return request
 }
 
-export const requestAjax = createHttp(import.meta.env.VITE_APP_BASE_API)
+export const requestAjax = createHttp('/api')

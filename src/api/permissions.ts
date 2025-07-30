@@ -1,14 +1,18 @@
 import { requestAjax } from './http'
 
 export interface PermissionsVO {
-  _id: string
+  id: string
   name: string
   code: string
+  parentCode?: string
+  routeCodes?: string[] | string
+  updateTime?: string
+  createTime?: string
 }
 
 export function getPubAdminPermissionsListAll (params?: any) {
   return requestAjax({
-    url: '/api/pub/admin/permissions/list/all',
+    url: '/pub/admin/permissions/list/all',
     method: 'get',
     params
   })
@@ -16,7 +20,7 @@ export function getPubAdminPermissionsListAll (params?: any) {
 
 export function postPubAdminPermissionsSaveBatch (data?: any) {
   return requestAjax({
-    url: '/api/pub/admin/permissions/save/batch',
+    url: '/pub/admin/permissions/save/batch',
     method: 'post',
     data
   })
@@ -24,7 +28,7 @@ export function postPubAdminPermissionsSaveBatch (data?: any) {
 
 export function deletePubAdminPermissionsDelete (data?: any) {
   return requestAjax({
-    url: '/api/pub/admin/permissions/delete',
+    url: '/pub/admin/permissions/delete',
     method: 'delete',
     data
   })

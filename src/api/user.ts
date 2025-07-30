@@ -2,7 +2,7 @@ import { requestAjax } from './http'
 
 export interface UserVO {
   _id: string
-  name: string
+  username: string
   code: string
   nickname: string
   pictureUrl: string
@@ -49,7 +49,7 @@ export interface UserInfoVO {
   nickname: string
   roleCode: string
   roleName: string
-  roleLevel: number
+  user_role_level: number
   pictureUrl: string
   routeList: UserRouteConfigVO[]
   roleList: {
@@ -60,10 +60,17 @@ export interface UserInfoVO {
 }
 
 export function getPubAdminUserListPage (params?: any) {
+  console.log('getPubAdminUserListPage 调用，参数:', params)
   return requestAjax({
-    url: `/api/pub/admin/user/list/page/${params.pageSize}/${params.currentPage}`,
+    url: `/user/list`,
     method: 'get',
     params
+  }).then(res => {
+    console.log('getPubAdminUserListPage 响应:', res)
+    return res
+  }).catch(error => {
+    console.error('getPubAdminUserListPage 错误:', error)
+    throw error
   })
 }
 
@@ -77,7 +84,7 @@ export function postPubAdminUserCurrentChangeRole (data?: any) {
 
 export function postPubAdminUserSaveBatch (data?: any) {
   return requestAjax({
-    url: '/api/pub/admin/user/save/batch',
+    url: '/user/batch_update',
     method: 'post',
     data
   })

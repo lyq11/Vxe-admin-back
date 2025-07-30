@@ -15,6 +15,16 @@ import './plugins'
 
 import PageView from './views/layout/PageView.vue'
 
+// import './extend-cell-area/vxe-table-extend-cell-area.es6.min'
+// import './extend-cell-area/vxe-table-extend-cell-area.min.css'
+// VxeUI.setConfig({
+//     // showAuthLog: true, // 是否在控制台显示授权信息，专业版支持关闭
+//     authId: '3h34mde1oh1btxa4', // 获取授权后在官网登录后进入“用户中心”查看
+//     onAuth (e) {
+//       // 打印授权状态
+//       console.log(e)
+//     }
+//   })
 const app = createApp(App)
 
 app.component('PageView', PageView)

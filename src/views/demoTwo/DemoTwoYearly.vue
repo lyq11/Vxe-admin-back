@@ -1,7 +1,7 @@
 <template>
   <div>
     <div style="text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 20px;">
-      *年戊水光伏电站电量统计表
+      年度戊水光伏电站电量统计表-发电量
     </div>
     <vxe-grid ref="gridRef" v-bind="gridOptions" v-on="gridEvents">
       <template #toolbarButtons>
@@ -23,9 +23,8 @@ import XEUtils from 'xe-utils'
 
 interface RowVO {
   id: number
-  seq: string
-  date: string
   project: string
+  year: string
   peak: number
   high: number
   normal: number
@@ -104,7 +103,7 @@ const gridOptions = reactive<VxeGridProps<RowVO>>({
       options: [
         [
           { code: 'COPY_TITLE', name: '复制列标题' },
-          { code: 'EXPORT_ALL', name: '导出 CSV', prefixIcon: 'vxe-icon-download', params: { filename: '光伏电站电量统计表', type: 'csv' } }
+          { code: 'EXPORT_ALL', name: '导出 CSV', prefixIcon: 'vxe-icon-download', params: { filename: '年度戊水光伏电站电量统计表-发电量', type: 'csv' } }
         ]
       ]
     },
@@ -162,15 +161,15 @@ const gridOptions = reactive<VxeGridProps<RowVO>>({
           }
         ],
         [
-          { code: 'PRINT_ALL', name: '打印', prefixIcon: 'vxe-icon-print', params: { columns: ['seq', 'date', 'project', 'peak', 'high', 'normal', 'valley', 'total'] } },
-          { code: 'EXPORT_ALL', name: '导出 CSV', prefixIcon: 'vxe-icon-download', params: { filename: '光伏电站电量统计表', type: 'csv' } }
+          { code: 'PRINT_ALL', name: '打印', prefixIcon: 'vxe-icon-print', params: { columns: ['project', 'year', 'peak', 'high', 'normal', 'valley', 'total'] } },
+          { code: 'EXPORT_ALL', name: '导出 CSV', prefixIcon: 'vxe-icon-download', params: { filename: '年度戊水光伏电站电量统计表-发电量', type: 'csv' } }
         ]
       ]
     },
     footer: {
       options: [
         [
-          { code: 'PRINT_ALL', name: '打印', prefixIcon: 'vxe-icon-print', params: { columns: ['seq', 'date', 'project', 'peak', 'high', 'normal', 'valley', 'total'] } }
+          { code: 'PRINT_ALL', name: '打印', prefixIcon: 'vxe-icon-print', params: { columns: ['project', 'year', 'peak', 'high', 'normal', 'valley', 'total'] } }
         ]
       ]
     }
@@ -198,9 +197,8 @@ const gridOptions = reactive<VxeGridProps<RowVO>>({
     gt: 0
   },
   columns: [
-    { field: 'seq', title: '序号', width: 80, fixed: 'left' },
-    { field: 'date', title: '*月*日', width: 120, fixed: 'left' },
     { field: 'project', title: '项目', width: 200, fixed: 'left' },
+    { field: 'year', title: '年份', width: 120, fixed: 'left' },
     { field: 'peak', title: '尖峰（度）', width: 120, editRender: { name: 'input' } },
     { field: 'high', title: '峰（度）', width: 120, editRender: { name: 'input' } },
     { field: 'normal', title: '平（度）', width: 120, editRender: { name: 'input' } },
@@ -214,46 +212,53 @@ const loadData = (size: number) => {
   gridOptions.loading = true
   setTimeout(async () => {
     const list: RowVO[] = [
-      // 1. 发电量
-      { id: 1, seq: '1', date: '发电量', project: '1#发电单元（南区）', peak: 1250, high: 2100, normal: 1800, valley: 950, total: 6100 },
-      { id: 2, seq: '1', date: '发电量', project: '2#发电单元（北区）', peak: 1350, high: 2200, normal: 1900, valley: 1050, total: 6500 },
-      { id: 3, seq: '1', date: '发电量', project: '合计（度）', peak: 2600, high: 4300, normal: 3700, valley: 2000, total: 12600 },
-      { id: 4, seq: '1', date: '发电量', project: '占比（%）', peak: 20.6, high: 34.1, normal: 29.4, valley: 15.9, total: 100 },
+      // 1#发电单元（南区）
+      { id: 1, project: '1#发电单元（南区）', year: '2025年', peak: 15000, high: 25000, normal: 22000, valley: 11000, total: 73000 },
+      { id: 2, project: '1#发电单元（南区）', year: '2026年', peak: 16000, high: 26000, normal: 23000, valley: 11500, total: 76500 },
+      { id: 3, project: '1#发电单元（南区）', year: '2027年', peak: 17000, high: 27000, normal: 24000, valley: 12000, total: 80000 },
+      { id: 4, project: '1#发电单元（南区）', year: '2028年', peak: 18000, high: 28000, normal: 25000, valley: 12500, total: 83500 },
+      { id: 5, project: '1#发电单元（南区）', year: '2029年', peak: 19000, high: 29000, normal: 26000, valley: 13000, total: 87000 },
+      { id: 6, project: '1#发电单元（南区）', year: '2030年', peak: 20000, high: 30000, normal: 27000, valley: 13500, total: 90500 },
+      { id: 7, project: '1#发电单元（南区）', year: '2031年', peak: 21000, high: 31000, normal: 28000, valley: 14000, total: 94000 },
+      { id: 8, project: '1#发电单元（南区）', year: '2032年', peak: 22000, high: 32000, normal: 29000, valley: 14500, total: 97500 },
+      { id: 9, project: '1#发电单元（南区）', year: '2033年', peak: 23000, high: 33000, normal: 30000, valley: 15000, total: 101000 },
+      { id: 10, project: '1#发电单元（南区）', year: '2034年', peak: 24000, high: 34000, normal: 31000, valley: 15500, total: 104500 },
+      { id: 11, project: '1#发电单元（南区）', year: '平均', peak: 19500, high: 29500, normal: 26500, valley: 13250, total: 88750 },
+      { id: 12, project: '1#发电单元（南区）', year: '最大', peak: 24000, high: 34000, normal: 31000, valley: 15500, total: 104500 },
+      { id: 13, project: '1#发电单元（南区）', year: '最小', peak: 15000, high: 25000, normal: 22000, valley: 11000, total: 73000 },
+      { id: 14, project: '1#发电单元（南区）', year: '合计', peak: 195000, high: 295000, normal: 265000, valley: 132500, total: 887500 },
       
-      // 2. 上网电量
-      { id: 5, seq: '2', date: '上网电量', project: '南区未央', peak: 1100, high: 1850, normal: 1600, valley: 850, total: 5400 },
-      { id: 6, seq: '2', date: '上网电量', project: '南区杏园', peak: 1150, high: 1950, normal: 1700, valley: 900, total: 5700 },
-      { id: 7, seq: '2', date: '上网电量', project: '北区未央', peak: 1200, high: 2000, normal: 1750, valley: 950, total: 5900 },
-      { id: 8, seq: '2', date: '上网电量', project: '北区杏园', peak: 1250, high: 2100, normal: 1800, valley: 1000, total: 6150 },
-      { id: 9, seq: '2', date: '上网电量', project: '合计（度）', peak: 4700, high: 7900, normal: 6850, valley: 3700, total: 23150 },
+      // 2#发电单元（北区）
+      { id: 15, project: '2#发电单元（北区）', year: '2025年', peak: 16000, high: 26000, normal: 23000, valley: 11500, total: 76500 },
+      { id: 16, project: '2#发电单元（北区）', year: '2026年', peak: 17000, high: 27000, normal: 24000, valley: 12000, total: 80000 },
+      { id: 17, project: '2#发电单元（北区）', year: '2027年', peak: 18000, high: 28000, normal: 25000, valley: 12500, total: 83500 },
+      { id: 18, project: '2#发电单元（北区）', year: '2028年', peak: 19000, high: 29000, normal: 26000, valley: 13000, total: 87000 },
+      { id: 19, project: '2#发电单元（北区）', year: '2029年', peak: 20000, high: 30000, normal: 27000, valley: 13500, total: 90500 },
+      { id: 20, project: '2#发电单元（北区）', year: '2030年', peak: 21000, high: 31000, normal: 28000, valley: 14000, total: 94000 },
+      { id: 21, project: '2#发电单元（北区）', year: '2031年', peak: 22000, high: 32000, normal: 29000, valley: 14500, total: 97500 },
+      { id: 22, project: '2#发电单元（北区）', year: '2032年', peak: 23000, high: 33000, normal: 30000, valley: 15000, total: 101000 },
+      { id: 23, project: '2#发电单元（北区）', year: '2033年', peak: 24000, high: 34000, normal: 31000, valley: 15500, total: 104500 },
+      { id: 24, project: '2#发电单元（北区）', year: '2034年', peak: 25000, high: 35000, normal: 32000, valley: 16000, total: 108000 },
+      { id: 25, project: '2#发电单元（北区）', year: '平均', peak: 20500, high: 30500, normal: 27500, valley: 13750, total: 92250 },
+      { id: 26, project: '2#发电单元（北区）', year: '最大', peak: 25000, high: 35000, normal: 32000, valley: 16000, total: 108000 },
+      { id: 27, project: '2#发电单元（北区）', year: '最小', peak: 16000, high: 26000, normal: 23000, valley: 11500, total: 76500 },
+      { id: 28, project: '2#发电单元（北区）', year: '合计', peak: 205000, high: 305000, normal: 275000, valley: 137500, total: 922500 },
       
-      // 3. 光伏系统消耗电量
-      { id: 13, seq: '3', date: '光伏系统消耗电量', project: '1#发电单元（南区）', peak: 50, high: 80, normal: 70, valley: 40, total: 240 },
-      { id: 14, seq: '3', date: '光伏系统消耗电量', project: '2#发电单元（北区）', peak: 55, high: 85, normal: 75, valley: 45, total: 260 },
-      { id: 15, seq: '3', date: '光伏系统消耗电量', project: '合计（度）', peak: 105, high: 165, normal: 145, valley: 85, total: 500 },
-      
-      // 4. 第五再生水厂光伏消纳电量
-      { id: 17, seq: '4', date: '第五再生水厂光伏消纳电量', project: '南区高压室', peak: 800, high: 1350, normal: 1150, valley: 650, total: 3950 },
-      { id: 18, seq: '4', date: '第五再生水厂光伏消纳电量', project: '北区高压室', peak: 850, high: 1400, normal: 1200, valley: 700, total: 4150 },
-      { id: 19, seq: '4', date: '第五再生水厂光伏消纳电量', project: '合计（度）', peak: 1650, high: 2750, normal: 2350, valley: 1350, total: 8100 },
-      { id: 20, seq: '4', date: '第五再生水厂光伏消纳电量', project: '占比（%）', peak: 20.4, high: 34.0, normal: 29.0, valley: 16.6, total: 100 },
-      { id: 21, seq: '4', date: '第五再生水厂光伏消纳电量', project: '光伏消纳电量/总用电量（%）', peak: 35.0, high: 35.0, normal: 35.0, valley: 35.0, total: 35.0 },
-      
-      // 5. 第五再生水厂市电用电量
-      { id: 23, seq: '5', date: '第五再生水厂市电用电量', project: '南区未央', peak: 1500, high: 2500, normal: 2200, valley: 1200, total: 7400 },
-      { id: 24, seq: '5', date: '第五再生水厂市电用电量', project: '南区杏园', peak: 1600, high: 2700, normal: 2300, valley: 1300, total: 7900 },
-      { id: 25, seq: '5', date: '第五再生水厂市电用电量', project: '北区未央', peak: 1700, high: 2800, normal: 2400, valley: 1400, total: 8300 },
-      { id: 26, seq: '5', date: '第五再生水厂市电用电量', project: '北区杏园', peak: 1800, high: 2900, normal: 2500, valley: 1500, total: 8700 },
-      { id: 27, seq: '5', date: '第五再生水厂市电用电量', project: '合计（度）', peak: 6600, high: 10900, normal: 9400, valley: 5400, total: 32300 },
-      { id: 28, seq: '5', date: '第五再生水厂市电用电量', project: '占比（%）', peak: 20.4, high: 33.7, normal: 29.1, valley: 16.8, total: 100 },
-      
-      // 6. 第五再生水厂总用电量
-      { id: 30, seq: '6', date: '第五再生水厂总用电量', project: '南区未央', peak: 2300, high: 3850, normal: 3350, valley: 1850, total: 11350 },
-      { id: 31, seq: '6', date: '第五再生水厂总用电量', project: '南区杏园', peak: 2450, high: 4050, normal: 3500, valley: 1950, total: 11950 },
-      { id: 32, seq: '6', date: '第五再生水厂总用电量', project: '北区未央', peak: 2550, high: 4200, normal: 3600, valley: 2050, total: 12400 },
-      { id: 33, seq: '6', date: '第五再生水厂总用电量', project: '北区杏园', peak: 2650, high: 4350, normal: 3700, valley: 2150, total: 12850 },
-      { id: 34, seq: '6', date: '第五再生水厂总用电量', project: '合计（度）', peak: 9950, high: 16450, normal: 14150, valley: 8000, total: 48550 },
-      { id: 35, seq: '6', date: '第五再生水厂总用电量', project: '占比（%）', peak: 20.5, high: 33.9, normal: 29.1, valley: 16.5, total: 100 }
+      // 合计
+      { id: 29, project: '合计', year: '2025年', peak: 31000, high: 51000, normal: 45000, valley: 22500, total: 149500 },
+      { id: 30, project: '合计', year: '2026年', peak: 33000, high: 53000, normal: 47000, valley: 23500, total: 156500 },
+      { id: 31, project: '合计', year: '2027年', peak: 35000, high: 55000, normal: 49000, valley: 24500, total: 163500 },
+      { id: 32, project: '合计', year: '2028年', peak: 37000, high: 57000, normal: 51000, valley: 25500, total: 170500 },
+      { id: 33, project: '合计', year: '2029年', peak: 39000, high: 59000, normal: 53000, valley: 26500, total: 177500 },
+      { id: 34, project: '合计', year: '2030年', peak: 41000, high: 61000, normal: 55000, valley: 27500, total: 184500 },
+      { id: 35, project: '合计', year: '2031年', peak: 43000, high: 63000, normal: 57000, valley: 28500, total: 191500 },
+      { id: 36, project: '合计', year: '2032年', peak: 45000, high: 65000, normal: 59000, valley: 29500, total: 198500 },
+      { id: 37, project: '合计', year: '2033年', peak: 47000, high: 67000, normal: 61000, valley: 30500, total: 205500 },
+      { id: 38, project: '合计', year: '2034年', peak: 49000, high: 69000, normal: 63000, valley: 31500, total: 212500 },
+      { id: 39, project: '合计', year: '平均', peak: 40000, high: 60000, normal: 54000, valley: 27000, total: 181000 },
+      { id: 40, project: '合计', year: '最大', peak: 49000, high: 69000, normal: 63000, valley: 31500, total: 212500 },
+      { id: 41, project: '合计', year: '最小', peak: 31000, high: 51000, normal: 45000, valley: 22500, total: 149500 },
+      { id: 42, project: '合计', year: '合计', peak: 400000, high: 600000, normal: 540000, valley: 270000, total: 1810000 }
     ]
     
     gridOptions.loading = false
@@ -270,29 +275,10 @@ const loadData = (size: number) => {
 const setMergeCells = ($grid: VxeGridInstance<RowVO>) => {
   // 使用合并单元格扩展的方法
   const mergeCells = [
-    // 序号列合并
-    { row: 0, rowspan: 4, colspan: 1, col: 0 }, // 发电量序号
-    { row: 4, rowspan: 5, colspan: 1, col: 0 }, // 上网电量序号
-    { row: 9, rowspan: 3, colspan: 1, col: 0 }, // 光伏系统消耗电量序号
-    { row: 12, rowspan: 5, colspan: 1, col: 0 }, // 第五再生水厂光伏消纳电量序号
-    { row: 17, rowspan: 6, colspan: 1, col: 0 }, // 第五再生水厂市电用电量序号
-    { row: 23, rowspan: 6, colspan: 1, col: 0 }, // 第五再生水厂总用电量序号
-    
-    { row: 0, rowspan: 4, colspan: 1, col: 1 }, // 发电量序号
-    { row: 4, rowspan: 5, colspan: 1, col: 1 }, // 上网电量序号
-    { row: 9, rowspan: 3, colspan: 1, col: 1 }, // 光伏系统消耗电量序号
-    { row: 12, rowspan: 5, colspan: 1, col: 1 }, // 第五再生水厂光伏消纳电量序号
-    { row: 17, rowspan: 6, colspan: 1, col: 1 }, // 第五再生水厂市电用电量序号
-    { row: 23, rowspan: 6, colspan: 1, col: 1 }, // 第五再生水厂总用电量序号
-    
-    // // 日期列合并（全部合并为空）
-    // { row: 0, rowspan: 4, colspan: 1, col: 0 }, // 发电量序号
-    // { row: 4, rowspan: 5, colspan: 1, col: 0 }, // 上网电量序号
-    // { row: 9, rowspan: 4, colspan: 1, col: 0 }, // 光伏系统消耗电量序号
-    // { row: 13, rowspan: 4, colspan: 1, col: 0 }, // 第五再生水厂光伏消纳电量序号
-    // { row: 16, rowspan: 7, colspan: 1, col: 0 }, // 第五再生水厂市电用电量序号
-    // { row: 28, rowspan: 7, colspan: 1, col: 0 }, // 第五再生水厂总用电量序号
-    
+    // 项目列合并
+    { row: 0, rowspan: 14, colspan: 1, col: 0 }, // 1#发电单元（南区）
+    { row: 14, rowspan: 14, colspan: 1, col: 0 }, // 2#发电单元（北区）
+    { row: 28, rowspan: 14, colspan: 1, col: 0 }, // 合计
   ]
   
   // 设置合并单元格配置
@@ -310,7 +296,6 @@ const setMergeCells = ($grid: VxeGridInstance<RowVO>) => {
   } catch (error) {
     console.log('合并单元格设置失败，可能需要使用其他方法:', error)
   }
-  // 强制更新表格
 }
 
 const updateFooterInfo = () => {
@@ -352,4 +337,4 @@ const changeRowSizeEvent = () => {
 onMounted(() => {
   loadData(rowSize.value)
 })
-</script>
+</script> 

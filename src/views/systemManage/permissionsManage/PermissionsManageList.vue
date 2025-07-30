@@ -41,7 +41,7 @@ const routeCodesEditRender = reactive<VxeColumnPropTypes.EditRender<PermissionsV
 })
 
 getPubAdminRouteListAll({}).then(res => {
-  routeCodesEditRender.options = res.data
+  routeCodesEditRender.options = res.data.list
 })
 
 const gridOptions = reactive<VxeGridProps<PermissionsVO>>({
@@ -49,6 +49,7 @@ const gridOptions = reactive<VxeGridProps<PermissionsVO>>({
   height: '100%',
   keepSource: true,
   showOverflow: true,
+  data: [],
   rowConfig: {
     isHover: true
   },
@@ -66,7 +67,7 @@ const gridOptions = reactive<VxeGridProps<PermissionsVO>>({
   customConfig: {
     storage: true
   },
-  toolbarConfig: {
+  toolbarConfig: {  
     refresh: true,
     zoom: true,
     buttons: [
@@ -78,27 +79,76 @@ const gridOptions = reactive<VxeGridProps<PermissionsVO>>({
   editRules: {
     name: [
       { required: true, message: '请输入权限名称' }
+    ],
+    code: [
+      { required: true, message: '请输入权限编码' }
     ]
   },
+  pagerConfig: {},
   columns: [
     { type: 'checkbox', width: 60 },
     { type: 'seq', width: 70 },
-    { field: 'code', title: '权限编码', width: 300, visible: false },
+    { field: 'code', title: '权限编码', width: 300, editRender: { name: 'VxeInput' } },
     { field: 'name', title: '权限名称', treeNode: true, minWidth: 300, editRender: { name: 'VxeInput' } },
     { field: 'routeCodes', title: '关联路由', minWidth: 500, editRender: routeCodesEditRender },
-    { field: 'updateTime', title: '最后更新时间', width: 160, formatter: 'FormatDateTime' },
-    { field: 'createTime', title: '创建时间', width: 160, formatter: 'FormatDateTime' },
+    { field: 'updatedAt', title: '最后更新时间', width: 160, formatter: 'FormatDateTime' },
+     { field: 'createdAt', title: '创建时间', width: 160, formatter: 'FormatDateTime' },
     { field: 'action', title: '操作', fixed: 'right', width: 80, slots: { default: 'action' } }
   ],
   proxyConfig: {
+    response: {
+      result: 'data.list', // 配置响应结果列表字段
+      total: 'data.total' // 配置响应结果总页数字段
+    },
     ajax: {
       query ({ page }) {
         const params = {
           ...page
         }
-        return getPubAdminPermissionsListAll(params)
+        return getPubAdminPermissionsListAll(params).then(res => {
+          console.log('权限数据原始响应:', res)
+          
+          // 处理routeCodes数据格式
+          if (res.data && res.data.list) {
+            res.data.list.forEach((item: any) => {
+              // 如果routeCodes是字符串格式的JSON，转换为数组
+              if (item.routeCodes && typeof item.routeCodes === 'string') {
+                try {
+                  item.routeCodes = JSON.parse(item.routeCodes)
+                } catch (error) {
+                  console.warn('解析routeCodes失败:', item.routeCodes, error)
+                  item.routeCodes = []
+                }
+              } else if (!item.routeCodes) {
+                item.routeCodes = []
+              }
+            })
+          }
+          
+          console.log('处理后的权限数据:', res)
+          return res
+        })
       },
       save ({ body }) {
+        console.log('保存权限数据:', body)
+        
+        // 在保存前处理数据格式
+        if (body.insertRecords) {
+          body.insertRecords.forEach((item: any) => {
+            if (item.routeCodes && Array.isArray(item.routeCodes)) {
+              item.routeCodes = JSON.stringify(item.routeCodes)
+            }
+          })
+        }
+        
+        if (body.updateRecords) {
+          body.updateRecords.forEach((item: any) => {
+            if (item.routeCodes && Array.isArray(item.routeCodes)) {
+              item.routeCodes = JSON.stringify(item.routeCodes)
+            }
+          })
+        }
+        
         return postPubAdminPermissionsSaveBatch(body)
       }
     }
@@ -112,10 +162,10 @@ const removeRow = async (row: PermissionsVO) => {
     return
   }
   const type = await VxeUI.modal.confirm({
-    content: `请确认是否删除 “ ${row.name} ”？`
+    content: `请确认是否删除 " ${row.name} "？`
   })
   if (type === 'confirm') {
-    deletePubAdminPermissionsDelete({ _id: row._id }).then(() => {
+    deletePubAdminPermissionsDelete({ id: row.id }).then(() => {
       if ($grid) {
         $grid.commitProxy('query')
       }

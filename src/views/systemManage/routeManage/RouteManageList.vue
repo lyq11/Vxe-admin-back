@@ -44,6 +44,7 @@ const parentCodeEditRender = reactive<VxeColumnPropTypes.EditRender<RouteVO, Vxe
       transform: true,
       keyField: 'code',
       parentField: 'parentCode',
+      childrenField: 'children',
       showRadio: true
     }
   }
@@ -60,7 +61,7 @@ const typeEditRender = reactive<VxeColumnPropTypes.EditRender<RouteVO, VxeSelect
   defaultValue: 'menu',
   options: [
     { value: 'menu', label: '菜单' },
-    { value: 'action', label: '行为' }
+    { value: 'action', label: '动作' }
   ]
 })
 
@@ -71,7 +72,7 @@ const gridOptions = reactive<VxeGridProps<RouteVO>>({
   showOverflow: true,
   rowConfig: {
     isHover: true,
-    keyField: '_id'
+    keyField: 'id'
   },
   treeConfig: {
     transform: true,
@@ -93,7 +94,7 @@ const gridOptions = reactive<VxeGridProps<RouteVO>>({
     zoom: true,
     buttons: [
       { name: '新增', code: 'insert_edit', status: 'primary', icon: 'vxe-icon-add', permissionCode: 'routeManageActionInsert' },
-      { name: '标记/删除', code: 'mark_cancel', status: 'error', icon: 'vxe-icon-delete', permissionCode: 'routeManageActionDelete' },
+      { name: '标记/删除', code: 'remove', status: 'error', icon: 'vxe-icon-delete', permissionCode: 'routeManageActionDelete' },
       { name: '保存', code: 'save', status: 'success', icon: 'vxe-icon-save', permissionCode: 'routeManageActionInsert|routeManageActionDelete|routeManageActionUpdate' }
     ]
   },
@@ -124,22 +125,37 @@ const gridOptions = reactive<VxeGridProps<RouteVO>>({
     { field: 'code', title: '路由编码', width: 200, editRender: { name: 'VxeInput' } },
     { field: 'icon', title: '菜单图标', width: 120, editRender: { name: 'VxeIconPicker' } },
     { field: 'sort', title: '排序', width: 100, editRender: { name: 'VxeNumberInput' } },
-    { field: 'updateTime', title: '最后更新时间', width: 160, formatter: 'FormatDateTime' },
-    { field: 'createTime', title: '创建时间', width: 160, formatter: 'FormatDateTime' },
+    { field: 'updatedAt', title: '最后更新时间', width: 160, formatter: 'FormatDateTime' },
+    { field: 'createdAt', title: '创建时间', width: 160, formatter: 'FormatDateTime' },
     { field: 'action', title: '操作', fixed: 'right', width: 100, slots: { default: 'action' } }
   ],
   proxyConfig: {
+    response: {
+      list: 'data.list'
+    },
     ajax: {
       query ({ page }) {
         const params = {
           ...page
         }
-        return getPubAdminRouteListAll(params).then(res => {
-          parentCodeEditRender.options = res.data
+        return getPubAdminRouteListAll(params).then(res => {  
+          // 将扁平化数据转换为树形结构
+          const flatData = res.data.list
+          const treeData = XEUtils.toArrayTree(flatData, {
+            key: 'code',
+            parentKey: 'parentCode',
+            children: 'children'
+          })
+          
+          parentCodeEditRender.options = treeData
+          console.log('原始数据:', res.data.list)
+          console.log('树形数据:', treeData)
+          console.log(parentCodeEditRender.options)
           return res
         })
       },
       save ({ body }) {
+        console.log(body)
         return postPubAdminRouteSaveBatch(body)
       }
     }
@@ -168,7 +184,7 @@ const removeRow = async (row: RouteVO) => {
     content: `请确认是否删除 “ ${row.name} ”？`
   })
   if (type === 'confirm') {
-    deletePubAdminRouteDelete({ _id: row._id }).then(() => {
+    deletePubAdminRouteDelete({ id: row.id }).then(() => {
       if ($grid) {
         $grid.commitProxy('query')
       }

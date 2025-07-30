@@ -14,6 +14,7 @@ export const useUserStore = defineStore('user', {
       activeUserTab: '',
       userTabs: [] as any[],
       userInfo: null as UserInfoVO | null
+      
     }
   },
   getters: {
@@ -21,7 +22,7 @@ export const useUserStore = defineStore('user', {
       return !!(state.token && state.userInfo)
     },
     userRoleLevel (state) {
-      return state.userInfo ? state.userInfo.roleLevel : 900
+      return state.userInfo ? state.userInfo.user_role_level : 900
     },
     menuTreeList () {
       return [
@@ -109,9 +110,16 @@ export const useUserStore = defineStore('user', {
      * 登陆
      */
     async loginServer (formData?: { name: string, password: string }): Promise<void> {
-      const res = await postPubAdminLoginValid(formData)
-      this.setToken(res.data)
-      return this.updateUserInfo()
+      try {
+        console.log('开始登录请求，参数:', formData)
+        const res = await postPubAdminLoginValid(formData)
+        console.log('登录成功，响应:', res)
+        this.setToken(res.data)
+        return this.updateUserInfo()
+      } catch (error) {
+        console.error('登录失败，错误:', error)
+        throw error
+      }
     },
     /**
      * 退出登陆
@@ -136,7 +144,10 @@ export const useUserStore = defineStore('user', {
       return Promise.reject(e)
     },
     setToken (data: any) {
-      const { token, refreshToken } = data
+      console.log('设置Token，数据:', data)
+      // 后端返回的数据结构: { rst: '登录成功', code: 0, jwt: '...' }
+      const token = data.jwt || data.token
+      const refreshToken = data.refreshToken || ''
       this.token = token
       this.refreshToken = refreshToken
       localStorage.setItem('TOKEN', token)
@@ -170,7 +181,9 @@ export const useUserStore = defineStore('user', {
      */
     async updateUserInfo () {
       const res = await getPubAdminLoginInfo()
+      console.log(res)
       this.userInfo = res.data
+      console.log(this.userInfo)
     },
     /**
      * 切换角色

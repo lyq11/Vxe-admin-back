@@ -2,7 +2,7 @@
   <div class="aside-view">
     <div class="aside-logo">
       <img class="logo-img" src="@/assets/logo.png" />
-      <vxe-link v-if="!appStore.collapseAside" href="/" class="logo-title">Vxe 后台管理系统模板v4</vxe-link>
+      <vxe-link v-if="!appStore.collapseAside" href="/" class="logo-title">光伏发电统计系统</vxe-link>
     </div>
     <div class="aside-menu">
       <VxeMenu v-model="currRouteName" :options="userStore.menuTreeList" collapse-fixed />

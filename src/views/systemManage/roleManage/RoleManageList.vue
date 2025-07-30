@@ -72,8 +72,8 @@ const permissionsCodesItemRender = reactive<VxeFormItemPropTypes.ItemRender<Role
 })
 
 getPubAdminPermissionsListAll({}).then(res => {
-  permissionsCodesEditRender.options = res.data
-  permissionsCodesItemRender.options = res.data
+  permissionsCodesEditRender.options = res.data.list
+  permissionsCodesItemRender.options = res.data.list
 })
 
 const gridOptions = reactive<VxeGridProps<RoleVO>>({
@@ -81,6 +81,7 @@ const gridOptions = reactive<VxeGridProps<RoleVO>>({
   height: '100%',
   keepSource: true,
   showOverflow: true,
+  data: [],
   rowConfig: {
     isHover: true
   },
@@ -116,6 +117,9 @@ const gridOptions = reactive<VxeGridProps<RoleVO>>({
   editRules: {
     name: [
       { required: true, message: '请输入角色名称' }
+    ],
+    code: [
+      { required: true, message: '请输入角色编码' }
     ]
   },
   formConfig: {
@@ -129,18 +133,22 @@ const gridOptions = reactive<VxeGridProps<RoleVO>>({
   columns: [
     { type: 'checkbox', width: 60 },
     { type: 'seq', width: 70 },
-    { field: 'code', title: '角色编码', width: 300, visible: false },
+    { field: 'code', title: '角色编码', width: 300, editRender: { name: 'VxeInput' } },
     { field: 'name', title: '角色名称', minWidth: 200, sortable: true, editRender: { name: 'VxeInput' } },
     { field: 'level', title: '权重', width: 120, sortable: true, editRender: levelEditRender, titlePrefix: { icon: 'vxe-icon-question-circle-fill', content: '角色权重说明：数值越低权限越高，高权重的角色可以修改低权重的数据。' } },
     { field: 'permissionsCodes', title: '关联权限', minWidth: 500, editRender: permissionsCodesEditRender },
-    { field: 'remark', title: '备注', minWidth: 300 },
-    { field: 'updateTime', title: '最后更新时间', width: 160, formatter: 'FormatDateTime', sortable: true },
-    { field: 'createTime', title: '创建时间', width: 160, formatter: 'FormatDateTime', sortable: true },
+    { field: 'remark', title: '备注', minWidth: 300, editRender: { name: 'VxeInput' } },
+    { field: 'updatedAt', title: '最后更新时间', width: 160, formatter: 'FormatDateTime', sortable: true },
+    { field: 'createdAt', title: '创建时间', width: 160, formatter: 'FormatDateTime', sortable: true },
     { field: 'action', title: '操作', fixed: 'right', width: 80, slots: { default: 'action' } }
   ],
   proxyConfig: {
     sort: true,
     form: true,
+    response: {
+      result: 'data.list', // 配置响应结果列表字段
+      total: 'data.total' // 配置响应结果总页数字段
+    },
     ajax: {
       query ({ page, form, sorts }) {
         const params = {
@@ -149,9 +157,50 @@ const gridOptions = reactive<VxeGridProps<RoleVO>>({
           permissionsCodes: form.permissionsCodes ? form.permissionsCodes.join(',') : '',
           orderBy: sorts.map(item => `${item.field}|${item.order}`).join(',')
         }
-        return getPubAdminRoleListPage(params)
+        return getPubAdminRoleListPage(params).then(res => {
+          console.log('角色数据原始响应:', res)
+          
+          // 处理permissionsCodes数据格式
+          if (res.data && res.data.list) {
+            res.data.list.forEach((item: any) => {
+              // 如果permissionsCodes是字符串格式的JSON，转换为数组
+              if (item.permissionsCodes && typeof item.permissionsCodes === 'string') {
+                try {
+                  item.permissionsCodes = JSON.parse(item.permissionsCodes)
+                } catch (error) {
+                  console.warn('解析permissionsCodes失败:', item.permissionsCodes, error)
+                  item.permissionsCodes = []
+                }
+              } else if (!item.permissionsCodes) {
+                item.permissionsCodes = []
+              }
+            })
+          }
+          
+          console.log('处理后的角色数据:', res)
+          return res
+        })
       },
       save ({ body }) {
+        console.log('保存角色数据:', body)
+        
+        // 在保存前处理数据格式
+        if (body.insertRecords) {
+          body.insertRecords.forEach((item: any) => {
+            if (item.permissionsCodes && Array.isArray(item.permissionsCodes)) {
+              item.permissionsCodes = JSON.stringify(item.permissionsCodes)
+            }
+          })
+        }
+        
+        if (body.updateRecords) {
+          body.updateRecords.forEach((item: any) => {
+            if (item.permissionsCodes && Array.isArray(item.permissionsCodes)) {
+              item.permissionsCodes = JSON.stringify(item.permissionsCodes)
+            }
+          })
+        }
+        
         return postPubAdminRoleSaveBatch(body)
       }
     }
@@ -168,7 +217,7 @@ const removeRow = async (row: RoleVO) => {
     content: `请确认是否删除 “ ${row.name} ”？`
   })
   if (type === 'confirm') {
-    deletePubAdminRoleDelete({ _id: row._id }).then(() => {
+    deletePubAdminRoleDelete({ _id: row.id }).then(() => {
       if ($grid) {
         $grid.commitProxy('query')
       }

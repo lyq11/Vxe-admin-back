@@ -108,7 +108,55 @@ export const routeConfigs: Array<RouteRecordRaw> = [
             meta: {
               title: '示例二编辑'
             }
-          }
+          },
+                {
+        path: 'demoTwoMonthly',
+        name: 'DemoTwoMonthly',
+        component: () => import('../views/demoTwo/DemoTwoMonthly.vue'),
+        meta: {
+          title: '发电单元月度统计'
+        }
+      },
+      {
+        path: 'demoTwoYearly',
+        name: 'DemoTwoYearly',
+        component: () => import('../views/demoTwo/DemoTwoYearly.vue'),
+        meta: {
+          title: '年度戊水光伏电站电量统计表-发电量'
+        }
+      },
+          {
+      path: 'demoTwoDaily',
+      name: 'DemoTwoDaily',
+      component: () => import('../views/demoTwo/DemoTwoDaily.vue'),
+      meta: {
+        title: '20XX年XX月戊水光伏电站电量统计表-发电量'
+      }
+    },
+    {
+      path: 'demoTwoHourly',
+      name: 'DemoTwoHourly',
+      component: () => import('../views/demoTwo/DemoTwoHourly.vue'),
+      meta: {
+        title: '*年戊水光伏电站电量统计表2'
+      }
+    },
+    {
+      path: 'demoTwoComplex',
+      name: 'DemoTwoComplex',
+      component: () => import('../views/demoTwo/DemoTwoComplex.vue'),
+      meta: {
+        title: '戊水光伏电站电量统计表'
+      }
+    },
+    {
+      path: 'demoTwoFramework',
+      name: 'DemoTwoFramework',
+      component: () => import('../views/demoTwo/DemoTwoFramework.vue'),
+      meta: {
+        title: '戊水光伏电站电量统计表'
+      }
+    }
         ]
       },
       {

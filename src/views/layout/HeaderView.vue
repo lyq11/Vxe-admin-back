@@ -4,7 +4,7 @@
       <vxe-button class="collapseBtn" mode="text" :icon="appStore.collapseAside ? 'vxe-icon-menu-unfold' : 'vxe-icon-menu-fold'" @click="appStore.toggleCollapseAside()"></vxe-button>
     </div>
     <div v-if="userInfo" class="header-right">
-      <span class="right-item">
+      <!-- <span class="right-item">
         <vxe-link status="primary" href="/admin-template-v3/" target="_blank">切换 v3.x 版本</vxe-link>
       </span>
 
@@ -14,7 +14,7 @@
           <vxe-icon status="error" name="gitee-fill"></vxe-icon>
           <span>Gitee</span>
         </vxe-link>
-      </span>
+      </span> -->
 
       <span class="right-item">
         <vxe-switch
@@ -32,9 +32,9 @@
         <vxe-color-picker class="switch-primary-color" v-model="currPrimaryColor" :colors="colorList" size="mini"></vxe-color-picker>
       </span>
 
-      <span class="right-item">
+      <!-- <span class="right-item">
         <vxe-radio-group class="switch-size" v-model="currCompSize" :options="sizeOptions" type="button" size="mini"></vxe-radio-group>
-      </span>
+      </span> -->
 
       <span class="right-item">
         <vxe-pulldown :options="langPullList" trigger="click" class="right-item-comp" show-popup-shadow transfer  @option-click="langOptionClickEvent">

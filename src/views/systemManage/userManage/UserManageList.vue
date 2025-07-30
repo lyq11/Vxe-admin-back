@@ -7,7 +7,7 @@
       </template>
 
       <template #editName="{ row }">
-        <vxe-input v-model="row.name" :disabled="!!row.code"></vxe-input>
+        <vxe-input v-model="row.username" :disabled="!!row.code"></vxe-input>
       </template>
 
       <template #defaultPictureUrl="{ row }">
@@ -47,36 +47,51 @@ const gridRef = ref<VxeGridInstance<UserVO>>()
 const roleCodeEditRender = reactive<VxeColumnPropTypes.EditRender<UserVO, VxeSelectProps>>({
   name: 'VxeSelect',
   options: [],
+  optionProps: {
+    value: 'code',
+    label: 'name'
+  },
   defaultValue: 'default',
   props: {
     disabled: true
   }
 })
 
-const roleCodesEditRender = reactive<VxeColumnPropTypes.EditRender<UserVO, VxeSelectProps>>({
-  name: 'VxeSelect',
-  props: {
-    multiple: true
-  },
-  options: [],
-  defaultValue: [
-    'default'
-  ],
-  events: {
-    change ({ row }) {
-      if (!row.roleCodes.includes(row.roleCode)) {
-        row.roleCode = row.roleCodes[0]
-      }
-    }
-  }
-})
+// const roleCodesEditRender = reactive<VxeColumnPropTypes.EditRender<UserVO, VxeSelectProps>>({
+//   name: 'VxeSelect',
+//   props: {
+//     multiple: true
+//   },
+//   options: [],
+//   optionProps: {
+//     value: 'code',
+//     label: 'name'
+//   },
+//   defaultValue: [
+//     'default'
+//   ],
+//   events: {
+//     change ({ row }) {
+//       // 添加空值检查，避免undefined错误
+//       if (row.roleCodes && Array.isArray(row.roleCodes) && row.roleCode) {
+//         if (!row.roleCodes.includes(row.roleCode)) {
+//           row.roleCode = row.roleCodes[0]
+//         }
+//       }
+//     }
+//   }
+// })
 
 const roleCodeItemRender = reactive<VxeFormItemPropTypes.ItemRender<UserVO, VxeSelectProps>>({
   name: 'VxeSelect',
   props: {
     clearable: true
   },
-  options: []
+  options: [],
+  optionProps: {
+    value: 'code',
+    label: 'name'
+  },
 })
 
 const roleCodesItemRender = reactive<VxeFormItemPropTypes.ItemRender<UserVO, VxeSelectProps>>({
@@ -133,7 +148,7 @@ const gridOptions = reactive<VxeGridProps<UserVO>>({
     ]
   },
   editRules: {
-    name: [
+    username: [
       { required: true, message: '请输入用户名' }
     ],
     roleCodes: [
@@ -144,7 +159,7 @@ const gridOptions = reactive<VxeGridProps<UserVO>>({
     titleWidth: 80,
     titleAlign: 'right',
     items: [
-      { field: 'name', title: '用户名', span: 6, itemRender: { name: 'VxeInput', props: { clearable: true } } },
+      { field: 'username', title: '用户名', span: 6, itemRender: { name: 'VxeInput', props: { clearable: true } } },
       { field: 'nickname', title: '昵称', span: 6, itemRender: { name: 'VxeInput', props: { clearable: true } } },
       { field: 'email', title: '邮箱', span: 6, itemRender: { name: 'VxeInput', props: { clearable: true } } },
       { field: 'roleCodes', title: '关联角色', span: 6, itemRender: roleCodesItemRender },
@@ -158,20 +173,19 @@ const gridOptions = reactive<VxeGridProps<UserVO>>({
   columns: [
     { type: 'checkbox', width: 60 },
     { type: 'seq', width: 70 },
-    { field: 'code', title: '用户编码', width: 300, visible: false },
-    { field: 'name', title: '用户名', minWidth: 160, sortable: true, editRender: { name: 'VxeInput' }, slots: { edit: 'editName' } },
-    { field: 'roleCodes', title: '关联角色', minWidth: 300, editRender: roleCodesEditRender },
-    { field: 'roleCode', title: '默认角色', width: 140, editRender: roleCodeEditRender },
-    { field: 'nickname', title: '昵称', minWidth: 220, editRender: { name: 'VxeInput' } },
-    { field: 'pictureUrl', title: '头像', width: 120, slots: { default: 'defaultPictureUrl' } },
-    { field: 'email', title: '邮箱', minWidth: 220, editRender: { name: 'VxeInput' } },
-    { field: 'createTime', title: '注册时间', width: 160, formatter: 'FormatDateTime', sortable: true },
-    { field: 'updateTime', title: '最后更新时间', width: 160, formatter: 'FormatDateTime', sortable: true },
+    { field: 'id', title: '用户编码', width: 300, visible: false },
+    { field: 'username', title: '用户名', minWidth: 160, sortable: true, editRender: { name: 'VxeInput' }, slots: { edit: 'editName' } },
+    { field: 'role', title: '关联角色', minWidth: 300, editRender: roleCodeEditRender },
+    { field: 'createdAt', title: '注册时间', width: 160, formatter: 'FormatDateTime', sortable: true },
     { field: 'action', title: '操作', fixed: 'right', width: 80, slots: { default: 'action' } }
   ],
   proxyConfig: {
     sort: true,
     form: true,
+    response: {
+      result: 'data.list', // 配置响应结果列表字段
+      total: 'data.total' // 配置响应结果总页数字段
+    },  
     ajax: {
       query ({ page, form, sorts }) {
         const params = {
@@ -180,9 +194,50 @@ const gridOptions = reactive<VxeGridProps<UserVO>>({
           roleCodes: form.roleCodes ? form.roleCodes.join(',') : '',
           orderBy: sorts.map(item => `${item.field}|${item.order}`).join(',')
         }
-        return getPubAdminUserListPage(params)
+        return getPubAdminUserListPage(params).then(res => {
+          console.log('用户数据原始响应:', res)
+          
+          // 处理roleCodes数据格式
+          if (res.data && res.data.list) {
+            res.data.list.forEach((item: any) => {
+              // 如果roleCodes是字符串格式的JSON，转换为数组
+              if (item.roleCodes && typeof item.roleCodes === 'string') {
+                try {
+                  item.roleCodes = JSON.parse(item.roleCodes)
+                } catch (error) {
+                  console.warn('解析roleCodes失败:', item.roleCodes, error)
+                  item.roleCodes = []
+                }
+              } else if (!item.roleCodes) {
+                item.roleCodes = []
+              }
+            })
+          }
+          
+          console.log('处理后的用户数据:', res)
+          return res
+        })
       },
       save ({ body }) {
+        console.log('保存用户数据:', body)
+        
+        // 在保存前处理数据格式
+        if (body.insertRecords) {
+          body.insertRecords.forEach((item: any) => {
+            if (item.roleCodes && Array.isArray(item.roleCodes)) {
+              item.roleCodes = JSON.stringify(item.roleCodes)
+            }
+          })
+        }
+        
+        if (body.updateRecords) {
+          body.updateRecords.forEach((item: any) => {
+            if (item.roleCodes && Array.isArray(item.roleCodes)) {
+              item.roleCodes = JSON.stringify(item.roleCodes)
+            }
+          })
+        }
+        console.log("body", body)
         return postPubAdminUserSaveBatch(body)
       }
     }
@@ -196,7 +251,7 @@ const removeRow = async (row: UserVO) => {
     return
   }
   const type = await VxeUI.modal.confirm({
-    content: `请确认是否删除 “ ${row.name} ”？`
+    content: `请确认是否删除 " ${row.username} "？`
   })
   if (type === 'confirm') {
     deletePubAdminUserDelete({ _id: row._id }).then(() => {
@@ -224,9 +279,10 @@ const gridEvents: VxeGridListeners = {
 }
 
 getPubAdminRoleOptions().then(res => {
-  roleCodeEditRender.options = res.data
-  roleCodesEditRender.options = res.data
-  roleCodeItemRender.options = res.data
-  roleCodesItemRender.options = res.data
+  console.log("RoleOptions", res)
+  roleCodeEditRender.options = res.data.list
+  //roleCodesEditRender.options = res.data.list
+  roleCodeItemRender.options = res.data.list
+  roleCodesItemRender.options = res.data.list
 })
 </script>

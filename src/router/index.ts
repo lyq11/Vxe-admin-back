@@ -42,6 +42,11 @@ const handleRoutePermission = (to: RouteLocationNormalizedGeneric, _from: RouteL
     next()
     return
   }
+  if (to.name && String(to.name).startsWith('DemoTwo')) {
+    console.log('开发模式：允许访问', to.name)
+    next()
+    return
+  }
   console.log('无权限访问', to)
   next({
     name: 'PageError403'

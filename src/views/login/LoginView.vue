@@ -2,18 +2,18 @@
   <div>
     <div class="login-title">
       <img src="@/assets/logo.png">
-      <span>Vxe Admin</span>
+      <span>圣豆智慧光伏统计系统</span>
     </div>
-    <div class="login-desc">一个简洁高效、极致流畅的管理系统模板</div>
+    <div class="login-desc">专业提供报表的智慧光伏统计系统</div>
     <vxe-form v-bind="formOptions" v-on="formEvents">
       <template #pwdAction>
         <vxe-row>
           <vxe-col span="12">
             <vxe-checkbox v-model="isRememberPassword">记住密码</vxe-checkbox>
           </vxe-col>
-          <vxe-col span="12" align="right">
+          <!-- <vxe-col span="12" align="right">
             <vxe-link status="primary">忘记密码？</vxe-link>
-          </vxe-col>
+          </vxe-col> -->
         </vxe-row>
       </template>
       <template #submitAction>
@@ -22,10 +22,10 @@
       <template #otherAction>
         <vxe-row>
           <vxe-col span="12"></vxe-col>
-          <vxe-col span="12" align="right">
+          <!-- <vxe-col span="12" align="right">
             <span style="margin-left: 16px;">没有账号？</span>
             <vxe-link status="primary" :router-link="{ name: 'RegisterView' }">点击注册</vxe-link>
-          </vxe-col>
+          </vxe-col> -->
         </vxe-row>
       </template>
     </vxe-form>
@@ -54,8 +54,8 @@ const formOptions = reactive<VxeFormProps<FormDataVO>>({
   titleAlign: 'right',
   loading: false,
   data: {
-    name: 'test1',
-    password: 'test1'
+    name: '',
+    password: ''
   },
   rules: {
     name: [
@@ -66,7 +66,7 @@ const formOptions = reactive<VxeFormProps<FormDataVO>>({
     ]
   },
   items: [
-    { field: 'name', title: '', span: 24, itemRender: { name: 'VxeInput' } },
+    { field: 'username', title: '', span: 24, itemRender: { name: 'VxeInput' } },
     { field: 'password', title: '', span: 24, itemRender: { name: 'VxeInput', props: { type: 'password' } } },
     { span: 24, slots: { default: 'pwdAction' } },
     { span: 24, slots: { default: 'submitAction' } },
