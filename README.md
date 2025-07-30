@@ -1,27 +1,17 @@
 # Vxe 后台管理系统模板
 
-一个基于 [Vxe UI](https://vxeui.com) 轻量级、极致流畅的系统模板
-
-## 版本
-
-基于 Vxe v4.x 对应 vue3.x 版本
+基于 [Vxe UI](https://vxeui.com) 的后台管理系统
 
 ## 项目说明
 
-本项目是基于 [Vxe Admin Template](https://github.com/x-extends/vxe-admin-template) 进行定制开发的后台管理系统。
+基于 [Vxe Admin Template](https://github.com/x-extends/vxe-admin-template) 定制开发
 
-### 原项目链接
+### 原项目
 - **GitHub**: https://github.com/x-extends/vxe-admin-template
 - **Gitee**: https://gitee.com/x-extends/vxe-admin-template
 
 ### 后端项目
 - **后端Git仓库**: [后端项目链接待添加]
-
-## 主要修改内容
-
-- 添加了Git自动化批处理脚本
-- 优化了项目结构和配置
-- 完善了开发文档
 
 ## 浏览器支持
 
@@ -66,48 +56,24 @@
 
 ## 快速开始
 
-### 方式一：使用批处理脚本（推荐）
-
-1. **初始化Git仓库和配置**
-   ```bash
-   # 运行初始化脚本
-   init-git.bat
-   ```
-
-2. **日常代码推送**
-   ```bash
-   # 运行推送脚本
-   push.bat
-   ```
-
-### 方式二：手动操作
-
-#### 克隆代码
+### 使用批处理脚本
 ```bash
-git clone https://gitee.com/x-extends/vxe-admin-template.git
+# 初始化Git仓库
+init-git.bat
+
+# 推送代码
+push.bat
 ```
-或
+
+### 手动操作
 ```bash
 git clone https://github.com/x-extends/vxe-admin-template.git
-```
-
-#### 切换目录
-```bash
 cd vxe-admin-template
 ```
 
-### 设置镜像源(可忽略)
-```
+```bash
 npm config set registry https://registry.npmmirror.com
-```
-
-### 更新依赖
-```
 npm run update
-```
-
-### 运行项目
-```
 npm run serve
 ```
 
@@ -130,43 +96,21 @@ base: '/',
 // ...
 ```
 
-## 环境变量
+## 构建部署
 
-.env 通用环境变量配置文件  
-.env.production 正式环境变量配置文件
-
-## 打包正式环境生成 dist 目录
 ```bash
-npm run build
+npm run build        # 生成dist目录
+npm run build:zip    # 生成zip文件
 ```
 
-## 打包正式环境生成 zip 文件
-```bash
-npm run build:zip
-```
+## 批处理脚本
 
-## 批处理脚本说明
+- `init-git.bat` - Git仓库初始化
+- `push.bat` - 快速代码推送
 
-### init-git.bat
-Git仓库初始化和远程仓库配置脚本，功能包括：
-- 自动初始化Git仓库
-- 配置Git用户信息
-- 配置远程仓库（支持HTTPS/SSH/自定义URL）
-- 自动创建.gitignore文件
-- 可选的首次提交
+## 技术栈
 
-### push.bat
-快速代码推送脚本，功能包括：
-- 自动添加所有修改的文件
-- 使用时间戳生成提交信息
-- 自动推送到GitHub
-
-## 开发工具
-
-- **前端框架**: Vue 3.x
-- **UI组件库**: Vxe UI 4.x
-- **构建工具**: Vite
-- **包管理器**: npm
+- Vue 3.x + Vxe UI 4.x + Vite
 
 ## Contributors
 
@@ -174,14 +118,6 @@ Thank you to everyone who contributed to this project.
 
 [![vxe-admin-template](https://contrib.rocks/image?repo=x-extends/vxe-admin-template)](https://github.com/x-extends/vxe-admin-template/graphs/contributors)
 
-## 致谢
-
-感谢 [Vxe UI](https://vxeui.com) 团队提供的优秀组件库和模板。
-
 ## License
 
 [MIT](LICENSE) © 2019-present, Xu Liangzhan
-
----
-
-**注意**: 本项目基于开源项目进行定制开发，请遵守原项目的开源协议。
